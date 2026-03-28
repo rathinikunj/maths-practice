@@ -2,6 +2,10 @@
 
 A Streamlit-based math practice app for Class 4 students, with timed worksheets, instant feedback, and a parent dashboard.
 
+## Demo
+
+![Maths Champions Demo](demo.gif)
+
 ## Features
 
 - Student practice mode with mixed worksheets
