@@ -93,4 +93,4 @@ These are intentionally ignored in `.gitignore` and should not be committed to a
 
 ## License
 
-Add a license file before publishing (MIT is a good default for this project).
+This project is licensed under the MIT License.
