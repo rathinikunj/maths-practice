@@ -8,14 +8,18 @@ DATA_FILE = "progress.json"
 def load_progress():
     if os.path.exists(DATA_FILE):
         with open(DATA_FILE, "r") as f:
-            return json.load(f)
+            data = json.load(f)
+        for entry in data:
+            entry.setdefault("class_level", 4)
+        return data
     return []
 
 
-def save_progress(module, score, total, time_taken, attempts=None):
+def save_progress(module, score, total, time_taken, attempts=None, class_level=4):
     data = load_progress()
     data.append({
         "module": module,
+        "class_level": class_level,
         "score": score,
         "total": total,
         "time_taken": time_taken,

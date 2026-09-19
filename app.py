@@ -2,10 +2,10 @@ import streamlit as st
 import streamlit.components.v1 as components
 import os
 import re
-import fractions_module
-import measurement_module
-import perimeter_area_module
-import time_module
+from curriculum import CURRICULA
+from uuid import uuid4
+from answer_validation import formatted_answers_match
+from quantity_answers import quantity_answers_match
 import db
 import utils
 import pandas as pd
@@ -47,49 +47,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-UNIT_ALIASES = {
-    "kilogram": "kg",
-    "kilograms": "kg",
-    "kg": "kg",
-    "gram": "g",
-    "grams": "g",
-    "g": "g",
-    "litre": "l",
-    "litres": "l",
-    "liter": "l",
-    "liters": "l",
-    "l": "l",
-    "millilitre": "ml",
-    "millilitres": "ml",
-    "milliliter": "ml",
-    "milliliters": "ml",
-    "ml": "ml",
-    "metre": "m",
-    "metres": "m",
-    "meter": "m",
-    "meters": "m",
-    "m": "m",
-    "centimetre": "cm",
-    "centimetres": "cm",
-    "centimeter": "cm",
-    "centimeters": "cm",
-    "cm": "cm",
-    "kilometre": "km",
-    "kilometres": "km",
-    "kilometer": "km",
-    "kilometers": "km",
-    "km": "km",
-    "hour": "hr",
-    "hours": "hr",
-    "hr": "hr",
-    "minute": "min",
-    "minutes": "min",
-    "min": "min",
-    "day": "day",
-    "days": "day",
-}
-
-
 def normalize_text(value):
     return " ".join(str(value).strip().lower().split())
 
@@ -102,28 +59,7 @@ def normalize_number(value):
     return value
 
 
-def canonicalize_unit(unit):
-    cleaned = unit.strip().lower().replace(".", "")
-    return UNIT_ALIASES.get(cleaned, cleaned)
-
-
-def parse_number_with_optional_unit(text):
-    match = re.fullmatch(r"\s*(-?\d+(?:\.\d+)?)\s*([a-zA-Z]+)?\s*", text)
-    if not match:
-        return None
-    number = normalize_number(match.group(1))
-    unit = match.group(2)
-    return number, canonicalize_unit(unit) if unit else None
-
-
-def parse_quantity_pairs(text):
-    pairs = re.findall(r"(-?\d+(?:\.\d+)?)\s*([a-zA-Z]+)", text.lower())
-    if not pairs:
-        return None
-    return [(normalize_number(n), canonicalize_unit(u)) for n, u in pairs]
-
-
-def answers_match(user_answer, correct_answer, question_type):
+def answers_match(user_answer, correct_answer, question_type, answer_format=None, expected_unit=None):
     if user_answer is None:
         return False
 
@@ -133,21 +69,20 @@ def answers_match(user_answer, correct_answer, question_type):
     if question_type in ("mcq", "true_false"):
         return user_norm == correct_norm
 
+    if expected_unit is not None:
+        return quantity_answers_match(user_answer, correct_answer, expected_unit)
+
+    if answer_format:
+        return formatted_answers_match(user_answer, correct_answer, answer_format)
+
     if user_norm == correct_norm:
         return True
 
     if user_norm.replace(" ", "") == correct_norm.replace(" ", ""):
         return True
 
-    if re.fullmatch(r"-?\d+(?:\.\d+)?", correct_norm):
-        user_number = parse_number_with_optional_unit(user_answer)
-        if user_number and user_number[0] == normalize_number(correct_norm):
-            return True
-
-    correct_pairs = parse_quantity_pairs(correct_answer)
-    user_pairs = parse_quantity_pairs(user_answer)
-    if correct_pairs and user_pairs and correct_pairs == user_pairs:
-        return True
+    if re.fullmatch(r"-?\d+(?:\.\d+)?", correct_norm) and re.fullmatch(r"-?\d+(?:\.\d+)?", user_norm):
+        return normalize_number(user_norm) == normalize_number(correct_norm)
 
     return False
 
@@ -181,6 +116,13 @@ def sanitize_question(question):
 
 def sanitize_questions(questions):
     return [sanitize_question(question) for question in questions]
+
+
+def show_solution(result):
+    if result.get("solution_diagram"):
+        components.html(result["solution_diagram"], height=220, scrolling=True)
+    if result.get("solution_chart"):
+        st.table(pd.DataFrame(result["solution_chart"]).astype(str))
 
 
 def show_live_timer(start_time):
@@ -219,7 +161,7 @@ def show_live_timer(start_time):
         height=84,
     )
 
-st.title("🏆 Maths Champions - Class 4")
+st.title("🏆 Maths Champions")
 mode = st.sidebar.selectbox(
     "Select Mode",
     ["Student Practice", "Parent Dashboard"]
@@ -230,11 +172,6 @@ if previous_mode == "Parent Dashboard" and mode == "Student Practice":
 st.session_state.last_mode = mode
 
 if mode == "Student Practice":
-    module = st.selectbox(
-        "Select Module",
-        ["Fractions", "Measurement", "Perimeter & Area", "Time"]
-    )
-
     if "questions" not in st.session_state:
         st.session_state.questions = []
         st.session_state.score = 0
@@ -243,30 +180,74 @@ if mode == "Student Practice":
     if "confirm_exit_worksheet" not in st.session_state:
         st.session_state.confirm_exit_worksheet = False
 
+    st.session_state.setdefault("confirm_restart_worksheet", False)
+
+    worksheet_active = bool(st.session_state.questions)
+    if worksheet_active:
+        # Restore selectors when returning from the parent dashboard, where
+        # Streamlit may have cleaned up widgets that were not displayed.
+        active_class = st.session_state.worksheet_class
+        st.session_state.selected_class = active_class
+        st.session_state[f"chapter_class_{active_class}"] = st.session_state.worksheet_module
+    class_level = st.selectbox(
+        "Select Class", list(CURRICULA),
+        format_func=lambda value: f"Class {value}",
+        key="selected_class", disabled=worksheet_active,
+    )
+    chapters = CURRICULA[class_level]
+    module = st.selectbox(
+        "Select Chapter", list(chapters), key=f"chapter_class_{class_level}",
+        disabled=worksheet_active or not chapters,
+    )
+    if not chapters:
+        st.info(f"Class {class_level} chapters are coming soon. Please choose Class 4 to practise meanwhile.")
+    if worksheet_active:
+        st.caption("Class and chapter stay fixed until this worksheet ends.")
 
     def start_worksheet():
 
-        if module == "Fractions":
-            st.session_state.questions = fractions_module.generate_balanced_worksheet()
-        elif module == "Measurement":
-            st.session_state.questions = measurement_module.generate_balanced_worksheet()
-        elif module == "Perimeter & Area":
-            st.session_state.questions = perimeter_area_module.generate_balanced_worksheet()
-        else:
-            st.session_state.questions = time_module.generate_balanced_worksheet()
+        st.session_state.questions = chapters[module]()
         st.session_state.questions = sanitize_questions(st.session_state.questions)
+        st.session_state.worksheet_class = class_level
+        st.session_state.worksheet_module = module
+        st.session_state.worksheet_id = uuid4().hex
 
         st.session_state.score = 0
         st.session_state.current = 0
         st.session_state.start_time = utils.start_timer()
         st.session_state.user_answers = []
         st.session_state.confirm_exit_worksheet = False
+        st.session_state.confirm_restart_worksheet = False
 
-    if st.button("Start New Worksheet"):
-        start_worksheet()
+    def request_new_worksheet():
+        if st.session_state.questions:
+            st.session_state.confirm_restart_worksheet = True
+            st.session_state.confirm_exit_worksheet = False
+        else:
+            start_worksheet()
+
+    def request_exit():
+        st.session_state.confirm_exit_worksheet = True
+        st.session_state.confirm_restart_worksheet = False
+
+    def cancel_discard():
+        st.session_state.confirm_exit_worksheet = False
+        st.session_state.confirm_restart_worksheet = False
+
+    def exit_worksheet():
+        st.session_state.questions = []
+        st.session_state.current = 0
+        st.session_state.score = 0
+        st.session_state.start_time = None
+        st.session_state.user_answers = []
+        cancel_discard()
+
+    st.button("Start New Worksheet", disabled=not chapters, on_click=request_new_worksheet)
 
     if st.session_state.questions:
         q = sanitize_question(st.session_state.questions[st.session_state.current])
+        unit_label = {"cm2": "cm²", "square": "squares"}.get(q.get("expected_unit"), q.get("expected_unit"))
+        correct_answer_label = f"{q['answer']} {unit_label}" if unit_label else q["answer"]
 
         header_col, timer_col = st.columns([3, 2])
         with header_col:
@@ -275,72 +256,92 @@ if mode == "Student Practice":
             if st.session_state.start_time:
                 show_live_timer(st.session_state.start_time)
 
-        # Allow exiting only before first attempted question.
-        if st.session_state.current == 0 and not st.session_state.user_answers:
-            if not st.session_state.confirm_exit_worksheet:
-                if st.button("Exit Worksheet"):
-                    st.session_state.confirm_exit_worksheet = True
-                    st.rerun()
-            else:
-                st.warning("Exit worksheet without saving progress?")
-                confirm_col, cancel_col = st.columns(2)
-                with confirm_col:
-                    if st.button("Yes, Exit"):
-                        st.session_state.questions = []
-                        st.session_state.current = 0
-                        st.session_state.score = 0
-                        st.session_state.start_time = None
-                        st.session_state.user_answers = []
-                        st.session_state.confirm_exit_worksheet = False
-                        st.rerun()
-                with cancel_col:
-                    if st.button("Cancel Exit"):
-                        st.session_state.confirm_exit_worksheet = False
-                        st.rerun()
+        st.button("Exit Worksheet", on_click=request_exit)
+        if st.session_state.confirm_restart_worksheet:
+            st.warning("Start a new worksheet? Your unfinished worksheet and answers will be discarded without saving.")
+            confirm_col, cancel_col = st.columns(2)
+            with confirm_col:
+                st.button("Discard and Start New", on_click=start_worksheet)
+            with cancel_col:
+                st.button("Keep Working", on_click=cancel_discard)
+        elif st.session_state.confirm_exit_worksheet:
+            st.warning("Exit worksheet? Your unfinished worksheet and answers will be discarded without saving.")
+            confirm_col, cancel_col = st.columns(2)
+            with confirm_col:
+                st.button("Yes, Exit", on_click=exit_worksheet)
+            with cancel_col:
+                st.button("Cancel Exit", on_click=cancel_discard)
 
-        widget_key_base = f"q_{module}_{st.session_state.current}"
+        widget_key_base = f"q_{st.session_state.worksheet_id}_{st.session_state.current}"
         st.write(q["question"])
+        if unit_label:
+            st.caption(f"Answer in {unit_label}. You may enter the number alone or include the unit.")
+        if "chart" in q:
+            st.table(pd.DataFrame(q["chart"]))
+        if "diagram" in q:
+            components.html(q["diagram"], height=220, scrolling=True)
+        if "hint" in q:
+            st.caption(q["hint"])
 
-        user_answer = None
+        submitted = len(st.session_state.user_answers) > st.session_state.current
+        pending_discard = st.session_state.confirm_restart_worksheet or st.session_state.confirm_exit_worksheet
+        input_suffix = "mcq" if q["type"] == "mcq" else "tf" if q["type"] == "true_false" else "fill"
+        input_key = f"{widget_key_base}_{input_suffix}"
 
-        if q["type"] == "mcq":
-            user_answer = st.radio("Choose answer:", q["options"], key=f"{widget_key_base}_mcq")
-        elif q["type"] == "true_false":
-            user_answer = st.radio("Select:", ["True", "False"], key=f"{widget_key_base}_tf")
-        else:
-            user_answer = st.text_input("Your answer:", key=f"{widget_key_base}_fill")
-
-        if st.button("Submit Answer", key=f"{widget_key_base}_submit"):
-
-            correct = answers_match(user_answer, q["answer"], q["type"])
-
-            # Save attempt
+        def submit_answer():
+            # The saved attempt is also the submission guard across reruns.
+            if len(st.session_state.user_answers) > st.session_state.current:
+                return
+            answer = st.session_state[input_key]
+            correct = answers_match(answer, q["answer"], q["type"], q.get("answer_format"), q.get("expected_unit"))
             st.session_state.user_answers.append({
                 "question": q["question"],
-                "your_answer": user_answer,
-                "correct_answer": q["answer"],
-                "is_correct": correct
+                "your_answer": answer,
+                "correct_answer": correct_answer_label,
+                "is_correct": correct,
+                **{key: q[key] for key in ("solution_diagram", "solution_chart") if key in q},
             })
-
             if correct:
-                st.success("Correct! ⚽ Goal!")
                 st.session_state.score += 1
+
+        def next_question():
+            if len(st.session_state.user_answers) == st.session_state.current + 1:
+                st.session_state.current += 1
+
+        if q["type"] == "mcq":
+            st.radio("Choose answer:", q["options"], key=input_key, disabled=submitted)
+        elif q["type"] == "true_false":
+            st.radio("Select:", ["True", "False"], key=input_key, disabled=submitted)
+        else:
+            st.text_input("Your answer:", key=input_key, disabled=submitted)
+
+        st.button("Submit Answer", key=f"{widget_key_base}_submit",
+                  disabled=submitted or pending_discard, on_click=submit_answer)
+
+        if submitted:
+            result = st.session_state.user_answers[st.session_state.current]
+            if result["is_correct"]:
+                st.success("Correct! ⚽ Goal!")
             else:
-                st.error(f"Wrong! Correct answer: {q['answer']}")
+                st.error(f"Wrong! Correct answer: {result['correct_answer']}")
+            show_solution(result)
 
-            st.session_state.current += 1
-
-            if st.session_state.current >= len(st.session_state.questions):
+            if len(st.session_state.user_answers) >= len(st.session_state.questions):
 
                 time_taken = utils.stop_timer(st.session_state.start_time)
                 total_questions = len(st.session_state.questions)
-                db.save_score(module, st.session_state.score, total_questions, time_taken)
+                db.save_score(
+                    st.session_state.worksheet_module, st.session_state.score,
+                    total_questions, time_taken,
+                    class_level=st.session_state.worksheet_class,
+                )
                 save_progress(
-                    module=module,
+                    module=st.session_state.worksheet_module,
                     score=st.session_state.score,
                     total=total_questions,
                     time_taken=round(time_taken),
-                    attempts=list(st.session_state.user_answers)
+                    attempts=list(st.session_state.user_answers),
+                    class_level=st.session_state.worksheet_class,
                 )
 
                 st.write("## 🎉 Worksheet Completed!")
@@ -356,11 +357,14 @@ if mode == "Student Practice":
                     st.write(f"**Q:** {result['question']}")
                     st.write(f"Your Answer: {result['your_answer']}")
                     st.write(f"Correct Answer: {result['correct_answer']}")
+                    show_solution(result)
                     st.markdown("---")
 
                 st.session_state.questions = []
+                st.button("Choose Another Chapter")
             else:
-                st.rerun()
+                st.button("Next Question", key=f"{widget_key_base}_next",
+                          disabled=pending_discard, on_click=next_question)
 
 
     # 📊 Score History
@@ -370,8 +374,8 @@ if mode == "Student Practice":
     scores = db.get_scores()
 
     if scores:
-        df = pd.DataFrame(scores, columns=["ID", "Module", "Score", "Total", "Time", "Date"])
-        st.dataframe(df.drop(columns=["ID"]))
+        df = pd.DataFrame(scores, columns=["ID", "Chapter", "Score", "Total", "Time", "Date", "Class"])
+        st.dataframe(df[["Class", "Chapter", "Score", "Total", "Time", "Date"]])
 
 elif mode == "Parent Dashboard":
 
@@ -421,7 +425,7 @@ elif mode == "Parent Dashboard":
         for idx, d in enumerate(data[::-1], start=1):
             timestamp = d.get("timestamp", "No timestamp")
             with st.expander(
-                f"Worksheet {idx}: {d['module']} | "
+                f"Worksheet {idx}: Class {d['class_level']} | {d['module']} | "
                 f"Score {d['score']}/{d['total']} | "
                 f"Time {d['time_taken']} sec | {timestamp}"
             ):
@@ -434,6 +438,7 @@ elif mode == "Parent Dashboard":
                         st.write(f"**Q{q_idx} {icon}** {result.get('question', '')}")
                         st.write(f"Your Answer: {result.get('your_answer', '')}")
                         st.write(f"Correct Answer: {result.get('correct_answer', '')}")
+                        show_solution(result)
                         st.markdown("---")
 
         st.subheader("🏅 Football Badges")

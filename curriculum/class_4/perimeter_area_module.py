@@ -15,6 +15,7 @@ def square_perimeter():
         "question": question,
         "answer": answer,
         "type": "fill",
+        "expected_unit": "cm",
         "topic": "Square"
     }
 
@@ -28,6 +29,7 @@ def square_area():
         "question": question,
         "answer": answer,
         "type": "fill",
+        "expected_unit": "cm2",
         "topic": "Square"
     }
 
@@ -47,6 +49,7 @@ def rectangle_perimeter():
         "question": question,
         "answer": answer,
         "type": "fill",
+        "expected_unit": "cm",
         "topic": "Rectangle"
     }
 
@@ -62,6 +65,7 @@ def rectangle_area():
         "question": question,
         "answer": answer,
         "type": "fill",
+        "expected_unit": "cm2",
         "topic": "Rectangle"
     }
 
@@ -79,6 +83,7 @@ def irregular_perimeter():
         "question": question,
         "answer": answer,
         "type": "fill",
+        "expected_unit": "cm",
         "topic": "Irregular"
     }
 
@@ -98,6 +103,7 @@ def tiling_area():
         "question": question,
         "answer": answer,
         "type": "fill",
+        "expected_unit": "square",
         "topic": "Tiling"
     }
 
@@ -117,6 +123,7 @@ def shaded_area():
         "question": question,
         "answer": answer,
         "type": "fill",
+        "expected_unit": "square",
         "topic": "Shaded Area"
     }
 

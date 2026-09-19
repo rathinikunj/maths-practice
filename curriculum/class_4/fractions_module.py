@@ -1,6 +1,7 @@
 import random
 import re
 from math import gcd
+from fractions import Fraction
 
 # -----------------------------
 # Utility Helpers
@@ -78,7 +79,9 @@ def mixed_to_improper():
         "question": question,
         "answer": answer,
         "type": "fill",
-        "topic": "Conversion"
+        "topic": "Conversion",
+        "answer_format": "fraction_improper",
+        "hint": "Write an improper fraction, such as 7/3. Equivalent improper fractions are accepted."
     }
 
 
@@ -96,7 +99,9 @@ def improper_to_mixed_q():
         "question": question,
         "answer": answer,
         "type": "fill",
-        "topic": "Conversion"
+        "topic": "Conversion",
+        "answer_format": "fraction_mixed_value",
+        "hint": "Write a mixed number, such as 2 1/3. The fractional part need not be simplified."
     }
 
 
@@ -210,13 +215,14 @@ def addition_like():
     result_n = n1 + n2
 
     question = f"{n1}/{d} + {n2}/{d} = ?"
-    answer = f"{result_n}/{d}"
+    answer = str(Fraction(result_n, d))
 
     return {
         "question": question,
         "answer": answer,
         "type": "fill",
-        "topic": "Addition/Subtraction"
+        "topic": "Addition/Subtraction",
+        "answer_format": "fraction_value"
     }
 
 
@@ -228,13 +234,14 @@ def subtraction_like():
     result_n = n1 - n2
 
     question = f"{n1}/{d} - {n2}/{d} = ?"
-    answer = f"{result_n}/{d}"
+    answer = str(Fraction(result_n, d))
 
     return {
         "question": question,
         "answer": answer,
         "type": "fill",
-        "topic": "Addition/Subtraction"
+        "topic": "Addition/Subtraction",
+        "answer_format": "fraction_value"
     }
 
 
@@ -271,9 +278,10 @@ def fraction_word_problem():
 
     return {
         "question": question,
-        "answer": f"{simplified_n}/{simplified_d}",
+        "answer": str(Fraction(simplified_n, simplified_d)),
         "type": "fill",
-        "topic": "Word Problems"
+        "topic": "Word Problems",
+        "answer_format": "fraction_value"
     }
 
 

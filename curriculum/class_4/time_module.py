@@ -21,7 +21,8 @@ def convert_24_to_12():
         "question": question,
         "answer": answer,
         "type": "fill",
-        "topic": "Clock Conversion"
+        "topic": "Clock Conversion",
+        "answer_format": "clock_12"
     }
 
 
@@ -40,7 +41,8 @@ def convert_12_to_24():
         "question": question,
         "answer": answer,
         "type": "fill",
-        "topic": "Clock Conversion"
+        "topic": "Clock Conversion",
+        "answer_format": "clock_24"
     }
 
 
@@ -57,6 +59,7 @@ def convert_hours_to_minutes():
         "question": question,
         "answer": answer,
         "type": "fill",
+        "expected_unit": "min",
         "topic": "Time Conversion"
     }
 
@@ -70,6 +73,7 @@ def convert_days_to_hours():
         "question": question,
         "answer": answer,
         "type": "fill",
+        "expected_unit": "hr",
         "topic": "Time Conversion"
     }
 
@@ -96,7 +100,8 @@ def add_time():
         "question": question,
         "answer": answer,
         "type": "fill",
-        "topic": "Addition"
+        "topic": "Addition",
+        "answer_format": "quantity"
     }
 
 
@@ -115,6 +120,7 @@ def duration_in_days():
         "question": question,
         "answer": answer,
         "type": "fill",
+        "expected_unit": "day",
         "topic": "Duration"
     }
 

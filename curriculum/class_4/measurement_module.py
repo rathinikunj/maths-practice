@@ -41,15 +41,18 @@ def convert_length():
     if random.choice([True, False]):
         question = f"Convert {value} km into metres."
         answer = str(value * 1000)
+        expected_unit = "m"
     else:
         question = f"Convert {value} m into centimetres."
         answer = str(value * 100)
+        expected_unit = "cm"
 
     return {
         "question": question,
         "answer": answer,
         "type": "fill",
-        "topic": "Conversion"
+        "topic": "Conversion",
+        "expected_unit": expected_unit
     }
 
 
@@ -58,16 +61,19 @@ def convert_mass():
         value = random.randint(1, 9)
         question = f"Convert {value} kg into grams."
         answer = str(value * 1000)
+        expected_unit = "g"
     else:
         value = random.randint(1, 9) * 1000
         question = f"Convert {value} g into kilograms."
         answer = str(value // 1000)
+        expected_unit = "kg"
 
     return {
         "question": question,
         "answer": answer,
         "type": "fill",
-        "topic": "Conversion"
+        "topic": "Conversion",
+        "expected_unit": expected_unit
     }
 
 
@@ -76,16 +82,19 @@ def convert_capacity():
         value = random.randint(1, 9)
         question = f"Convert {value} L into millilitres."
         answer = str(value * 1000)
+        expected_unit = "ml"
     else:
         value = random.randint(1, 9) * 1000
         question = f"Convert {value} ml into litres."
         answer = str(value // 1000)
+        expected_unit = "l"
 
     return {
         "question": question,
         "answer": answer,
         "type": "fill",
-        "topic": "Conversion"
+        "topic": "Conversion",
+        "expected_unit": expected_unit
     }
 
 
@@ -112,7 +121,8 @@ def add_length():
         "question": question,
         "answer": answer,
         "type": "fill",
-        "topic": "Addition/Subtraction"
+        "topic": "Addition/Subtraction",
+        "answer_format": "quantity"
     }
 
 
@@ -137,7 +147,8 @@ def subtract_mass():
         "question": question,
         "answer": answer,
         "type": "fill",
-        "topic": "Addition/Subtraction"
+        "topic": "Addition/Subtraction",
+        "answer_format": "quantity"
     }
 
 
@@ -148,7 +159,8 @@ def subtract_mass():
 def estimate_rounding():
     value = random.randint(100, 999)
 
-    rounded = round(value, -2)
+    # For positive whole numbers, halfway values round up (250 -> 300).
+    rounded = ((value + 50) // 100) * 100
 
     question = f"Round {value} g to the nearest 100 g."
     answer = str(rounded)
@@ -157,7 +169,9 @@ def estimate_rounding():
         "question": question,
         "answer": answer,
         "type": "fill",
-        "topic": "Estimation"
+        "topic": "Estimation",
+        "expected_unit": "g",
+        "hint": "If the last two digits are 50 or more, round up; otherwise round down."
     }
 
 

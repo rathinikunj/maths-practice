@@ -1,0 +1,159 @@
+Chapter 1 - Large Numbers
+1. Place Value Charts
+   a. Indian Place Value system
+   b. International Place Value system
+2. Reading and writing 8-digit and 9-digit numbers
+3. Face Value and Place Value
+4. Comparison of Large Numbers
+   a. Successor and Predecessor
+   b. Comparing Number
+   c. Ascending and Descending Order
+5. Rounding Numbers
+   a. Rounding to nearest 10, 100, 1000, 10000 and so on
+6. Roman Numerals
+   a. Rules
+   b. Seven Basic symbols - I, V, X, L, C, D, M
+
+Chapter 2 - Addition, Subtraction and Their Applications
+1. Addition of Large Numbers
+   a. Parts of addition - augend, addend, sum
+2. Properties of Addition
+   a. Associative Property
+   b. Identity Property - Zero is the Identity element for addition
+   c. Commutative Property
+3. Estimating Sums
+4. Subtraction of Large Numbers
+   a Parts of Subtraction - Minuend, subtrahend, difference
+5. Properties of Subtraction
+   a. Commutative Property
+   b. Associative Property - This property does not hold for Subtraction
+   c. Identity Property - Zero is the Identity element for Subtraction of Integers
+6. Estimating Differences
+7. Addition and Subtraction together
+   a. Addition first, Subtraction next
+
+Chapter 3 - Multiplcation, Division, and their applications
+1. Multiplication Tables
+   a. Terms used in multiplcation - Multiplicand, Multiplier, Product
+2. Properties of Multiplcation
+   a. The product of a number and 1 is the number itself
+   b. The product of a number and zero is always zero
+   c. Like addition, multiplication is commutative, which means changing the order of factors does not change the product
+   d. Similar to addition, multiplication is also associative - The product of three numbers does not change when the grouping of the numbers is changed
+   e. Distributive Property of multiplcation over addition or subtraction - If a sum or difference of two numbers is multiplied by another number, they can be multiplied separately and then added or subtracted
+3. Multiplcation with 4-digit and 5-digit numbers
+   a. Lattice method for multiplication
+4. Multiplcation with 10, 100 and 1000
+5. Estimating Products
+6. Application of Multiplcation
+7. Division
+   a. Term used in Division - Divisor, Quotient, Dividend, Remainder
+8. Properties of Division
+   a. Division by 1
+   b. Division by itself
+   c. Division of 0 by any number
+   d. A number cannot be divided by 0
+   e. (divisor * quotient) + Remainder = Dividend
+   f. Remainder is always smaller than the divisor
+9. Division by 10, 100 and 1000
+10. Division of 5-digit by 2-digit
+11. Application of Division
+    a. Unitary method - A method where we find the value of a single unit from the value of multiple units and the value of multiple units from the value of a single unit
+12. More about operations on numbers
+    a. DMAS Rule
+
+
+
+Chapter 4 - Multiples and Factor
+1. Factors
+    a. Properties of factors
+        i. 1 is the smallest factor of every number
+        ii. Every number except 1 has atleast two factors, that is 1 and the number itself
+        iii. A factor of a number is a divisor that exactly divides the given number
+        iv. The factor of a number is always less than or equal to the number. A number is the biggest factor of itself
+    b. Rainbow method for checking all the factors of a number
+2. Multiples
+    a. Properties of Multiples
+        i. Every number is a multiple of itself as well as 1
+        ii. The number of multiples of a number is indefinite
+        iii. Every multiple of a number is greater than or equal to the number
+        iv. The smalles multiple of a number of the number itself
+3. Divisibility Test
+    a. Divisibility test of 2
+    b. Divisibility test of 3
+    c. Divisibility test of 4
+    d. Divisibility test of 5
+    e. Divisibility test of 6
+    f. Divisibility test of 7
+    g. Divisibility test of 8
+    h. Divisibility test of 9
+    i. Divisibility test of 10
+    j. Divisibility test of 11
+4. Prime and Composite Numbers
+    a. Prime numbers - Numbers having only two factors that is 1 and number itself are called prime numbers
+    b. Composite numbers - Numbers having more than two factors are called Composite Numbers
+    c. Twin Prime numbers - Prime numbers with one composite numner between them or two prime numbers whose difference is two are called twin primes
+    d. Co-primer numbers - Two numbers that have only 1 as the common factor are called co-prime numbers
+5. Prime Factorisation
+    a. Factor tree method
+    b. Division Method
+6. Highest Common Factor or Greatest Common Divisor and Lowest Common Multiple
+    a. Common division method for HCF
+    b. Common division method for LCM
+7. Relationship between HCF and LCM
+    a. HCF x LCM = First Numnber x Second Number - The product of two numbers is equal to the product of their HCF and LCM
+
+Chapter 5 - Fractions
+1. Fractions on Number Line
+    a. Number lines to represent a while with equal Parts
+    b. Number lines with more than a whole with equal Parts
+2. Types of Fractions
+    a. Like Fractions
+    b. Unlike Fractions
+    c. Unit Fractions
+    d. Proper Fractions
+    e. Improper Fractions
+    f. Mixed Fractions
+3. Converting Fractions
+    a. Converting mixed fraction into an Improper fraction
+    b. Conversion of an improper fraction into a mixed fraction
+4. Simplifying or Reducing Fractions
+    a. Make a fraction as simple as possible - the numerator and denominator will have only 1 as common factor
+    b. Method 1 - Keep dividing the given fraction by the same number till the fraction connot be divided any further
+    c. Find HCF of the two terms (numerator and denominator), and then divide it with the fraction
+    d. Equivalent Fractions
+    e. Checking for equivalence
+        i. by Cross multiplication
+        ii. by reducing the Fractions
+5. Comparing and Ordering Fractions
+    a. Comparing fractions with same numerator
+    b. Comparing fractions with same denominator
+    c. Comparing unlike fractions
+        i. Using LCM method - converting unlike into Like
+        ii. Cross multiplication method
+6. Addition and Subtraction of Fractions
+    a. Only like fractions can be added or subtracted
+    b. only numerators can be added or subtracted not the denominator as it represents the number of equal parts in each object or a set
+    c. To add or subtract unlike fractions, convert unlike fractions into like fractions
+    d. The answer should be in its simplest form or mixed number form
+7. Multiplication of Fractions
+    a. Multiplying the numerator with numerator and denominator with denominator
+    b. Before Multiplying, simplify first if possible
+    c. Answer should be in its simplest form or in mixed number form
+    d. Properties of multiplcation
+8. Reciprocal of Fractions
+    a. Multiplicative inverse of a number is called the reciprocal of a number
+    b. The reciprocal of a proper fraction is an improper fraction and vice versa
+    c. The reciprocal of a whole number is a proper fraction, with 1 as the numerator and whole number as the denominator
+    d. 0 has no reciprocal, as division by 0 is not possible
+    e. Product of a number and its reciprocal is 1
+9. Division of Fractions
+    a. To divide the whole number by a fractional number or a fractional number by another fractional number, find the reciprocal of the divisor
+    b. Multiply the dividend by the reciprocal of the divisor
+    c. Answer should be in its simplest form or in mixed number form
+    d. Properties of division
+        i. When 0 is divided by a fraction, the quotient is always 0
+        ii. A fraction divided by itself gives 1 as the quotient
+        iii. We cannot divide any fraction by 0
+        iv. When 1 is divided by a fraction, the quotient is the reciprocal of the divisor
+        v. When a fraction is divided by 1, the quotient is always the fraction itself.
